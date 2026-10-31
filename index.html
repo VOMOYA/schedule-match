@@ -101,7 +101,6 @@
       <ul>
         <li><span class="slot ok">緑</span> 全員空いています</li>
         <li><span class="slot part">黄</span> 1人だけ都合が悪い枠です（「1人欠けてもOK」を選んだときだけ出ます。誰が来られないかも書いてあります）</li>
-        <li><span class="note">終日：〇〇</span> 北田のカレンダーに入っている終日の予定です。空き判定には使っていないので、念のため確認してください</li>
       </ul>
 
       <h3>新しいメンバーの組み合わせを作るには</h3>
@@ -131,7 +130,7 @@
         <li>候補が1つも出ない → 期間を長くする、長さを短くする、「1人欠けてもOK」にする、を試してください。</li>
         <li>予定を入れたのに反映されない → 下の「探す」をもう一度押してください（毎回最新のカレンダーを読みにいきます）。</li>
       </ul>
-      <div class="tip">🔒 このページのURL（最後の #k=… の部分）は合言葉です。他の人には渡さないでください。北田の予定の理由（予定名）が見えてしまいます。</div>
+      <div class="tip">🔒 このページのURL（最後の #k=… の部分）は合言葉です。予定の中身（予定名）はこの画面には一切出ませんが、メンバーの組み合わせを編集できてしまうので、北田以外には渡さないでください。</div>
     </details>
   </section>
 
@@ -179,9 +178,6 @@
       <button class="chip" data-v="0" aria-pressed="true">全員そろう</button>
       <button class="chip" data-v="1" aria-pressed="false">1人欠けてもOK</button>
     </div>
-    <div class="row"><span class="lbl"></span>
-      <label class="toggle"><input type="checkbox" id="f-why"> 北田の都合が悪い枠と理由も表示</label>
-    </div>
   </section>
 
   <div class="summary"><span id="count"></span><span id="updated"></span></div>
@@ -211,7 +207,7 @@
 
   const DOW = '日月火水木金土';
   const $ = id => document.getElementById(id);
-  const state = { days: 28, len: 60, miss: 0, dow: new Set([0,1,2,3,4,5,6]), why: false };
+  const state = { days: 28, len: 60, miss: 0, dow: new Set([0,1,2,3,4,5,6]) };
   let groups = [], current = 0, result = null, editingNew = false;
 
   // ---------- 通信 ----------
@@ -255,7 +251,6 @@
     const v = +b.dataset.v, on = b.getAttribute('aria-pressed') !== 'true';
     b.setAttribute('aria-pressed', String(on)); on ? state.dow.add(v) : state.dow.delete(v); render();
   });
-  $('f-why').addEventListener('change', e => { state.why = e.target.checked; render(); });
 
   // ---------- メンバー ----------
   function renderGroups() {
@@ -357,20 +352,11 @@
     if (cur) out.push(cur);
     return out.filter(r => r.end - r.start >= state.len);
   }
-  function busyOfSelf(day) {
-    const step = result.step, out = [];
-    day.cells.filter(c => c.why).forEach(c => {
-      const why = [...new Set(c.why)].join('・'), l = out[out.length - 1];
-      if (l && l.why === why && l.end === c.m) l.end = c.m + step;
-      else out.push({ start: c.m, end: c.m + step, why });
-    });
-    return out;
-  }
   const who = r => r.out.map(i => result.members[i].name).join('・');
 
   function view() {
-    return result.days.filter(d => state.dow.has(d.dow)).map(d => ({ ...d, rs: ranges(d), busy: state.why ? busyOfSelf(d) : [] }))
-      .filter(d => d.rs.length || d.busy.length);
+    return result.days.filter(d => state.dow.has(d.dow)).map(d => ({ ...d, rs: ranges(d) }))
+      .filter(d => d.rs.length);
   }
   function render() {
     if (!result) return;
@@ -385,12 +371,10 @@
     $('list').innerHTML = days.map(d => `
       <article class="day">
         <h3>${d.label}</h3>
-        ${d.allDay.length ? `<div class="note">終日：${esc(d.allDay.join('、'))}</div>` : ''}
         <div class="slots">
           ${d.rs.map(r => r.out.length
               ? `<span class="slot part">${hm(r.start)}–${hm(r.end)}（${esc(who(r))}さん不可）</span>`
               : `<span class="slot ok">${hm(r.start)}–${hm(r.end)}</span>`).join('')}
-          ${d.busy.map(b => `<span class="slot busy">${hm(b.start)}–${hm(b.end)} ${esc(b.why)}</span>`).join('')}
         </div>
       </article>`).join('');
   }
