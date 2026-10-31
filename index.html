@@ -76,6 +76,11 @@
   .btn.primary { background: var(--accent); color: var(--card); font-weight: 600; }
   .toast { position: fixed; left: 50%; bottom: 76px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; }
   .toast.show { opacity: 1; }
+  body[data-role="participant"] .owner-only, body:not([data-role="participant"]) .part-only { display: none !important; }
+  .regbox { background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 8px 0; font-size: 13px; }
+  .regbox input { width: 100%; margin: 6px 0; }
+  .regbox .err { color: var(--err); margin: 6px 0; }
+  .regbtn { background: var(--accent); color: var(--card); border: 0; border-radius: 6px; font-size: 12px; padding: 2px 10px; cursor: pointer; font-family: inherit; }
   @media (max-width: 480px) { .edit-row { grid-template-columns: 1fr auto; } .edit-row input.src { grid-column: 1 / -1; grid-row: 2; } }
 </style>
 </head>
@@ -90,12 +95,67 @@
     <details class="help" id="help">
       <summary>📖 使い方（はじめての方はここを開いてください）</summary>
 
-      <h3>基本の3ステップ</h3>
-      <ol>
-        <li><b>メンバーを選ぶ</b>：「メンバー」の欄で、保存してある組み合わせ（例：北田・田原・あっちゃん）をタップします。北田の予定は毎回自動で入ります。</li>
-        <li><b>条件を選ぶ</b>：期間・時間帯・長さ・曜日を選びます。迷ったらそのままでOKです。</li>
-        <li><b>「探す」を押す</b>：全員が空いている日時が緑色で出ます。「候補をコピー」を押すと、LINEやメールにそのまま貼れる文章になります。</li>
-      </ol>
+      <!-- 参加者向け -->
+      <div class="part-only">
+        <h3>はじめに（1回だけ）：自分のカレンダーを登録する</h3>
+        <p>このアプリは、メンバーみんなのGoogleカレンダーから「空いている時間」を探します。<b>予定の中身（予定名・場所・メモ）は、北田にも他のメンバーにも一切見えません。</b>分かるのは「その時間が埋まっているかどうか」だけです。</p>
+        <ol>
+          <li><b>パソコン</b>でGoogleカレンダー（calendar.google.com）を開きます。<small>（スマホのアプリでは設定できません）</small></li>
+          <li>右上の歯車マーク →「<b>設定</b>」を押します。</li>
+          <li>左側の「マイカレンダーの設定」で、<b>自分の名前のカレンダー</b>を押します。</li>
+          <li>「<b>アクセス権限</b>」の「一般公開して誰でも利用できるようにする」にチェックを入れます。</li>
+          <li>右側の選択肢を「<b>予定の表示（時間枠のみ、詳細は非表示）</b>」にします。<br><small>⚠️「すべての予定の詳細」にはしないでください。</small></li>
+          <li>同じ画面を下にスクロールし、「カレンダーの統合」にある<b>カレンダーID</b>（多くの場合はGmailアドレス）をコピーします。</li>
+          <li>この画面に戻り、「メンバー」の欄で<b>自分の名前の横の「登録する」</b>を押して、コピーしたIDを貼り付けて「登録」を押します。</li>
+        </ol>
+        <div class="tip">✅ 登録すると、すぐにみんなの空いている日時が出ます。あとは自分のカレンダーに予定を入れるだけで、自動で反映されます。<br>
+          🛑 やめたいときは、自分の欄の「変更」から空にして登録し、カレンダーの「一般公開」のチェックを外してください。</div>
+
+        <h3>候補の見方</h3>
+        <ol>
+          <li>条件（期間・時間帯・長さ・曜日）を選んで「<b>探す</b>」を押します。</li>
+          <li>全員が空いている日時が出ます。「<b>候補をコピー</b>」でLINEなどに貼れます。</li>
+        </ol>
+      </div>
+
+      <!-- 北田向け -->
+      <div class="owner-only">
+        <h3>基本の3ステップ</h3>
+        <ol>
+          <li><b>メンバーを選ぶ</b>：「メンバー」の欄で、保存してある組み合わせ（例：北田・田原・あっちゃん）をタップします。北田の予定は毎回自動で入ります。</li>
+          <li><b>条件を選ぶ</b>：期間・時間帯・長さ・曜日を選びます。迷ったらそのままでOKです。</li>
+          <li><b>「探す」を押す</b>：全員が空いている日時が緑色で出ます。「候補をコピー」を押すと、LINEやメールにそのまま貼れる文章になります。</li>
+        </ol>
+
+        <h3>新しいメンバーの組み合わせを作るには</h3>
+        <ol>
+          <li>「メンバー」の欄の「＋新しい組み合わせ」を押します。</li>
+          <li>組み合わせの名前（例：〇〇プロジェクト）を入れます。</li>
+          <li>「＋メンバーを追加」で、一人ずつ<b>名前</b>を入れます。カレンダーが分かっている人は<b>カレンダーの共有URL・Gmail・シートURL</b>も入れます。分からない人は空欄のままでOK（本人に登録してもらえます）。</li>
+          <li>「保存」を押すと、次からはタップするだけで呼び出せます。</li>
+        </ol>
+
+        <h3>メンバー本人に登録してもらうには（参加者用URL）</h3>
+        <ol>
+          <li>組み合わせを選んで「🔗 参加者用URLをコピー」を押します。</li>
+          <li>そのURLをメンバーに送ります。メンバーは開いたページの使い方に沿って、自分のカレンダーを登録します。</li>
+        </ol>
+        <ul>
+          <li>参加者用URLで見えるのは<b>その組み合わせだけ</b>です。他の組み合わせ、他の人の登録先、北田の予定名は見えません。</li>
+          <li>参加者が変えられるのは、<b>北田が登録していない欄だけ</b>です。北田が入れた欄（田原さんのシートなど）は変えられません。</li>
+          <li>参加者が登録できるのは「一般公開（時間枠のみ）」にしたGoogleカレンダーだけです。</li>
+          <li>URLが広まってしまったときは「作り直す」を押すと、古い参加者用URLは使えなくなります。</li>
+        </ul>
+
+        <h3>北田が代わりに入れるとき</h3>
+        <ul>
+          <li><b>一般公開（時間枠のみ）</b>：相手にカレンダーIDか公開URLを教えてもらい、編集画面で入れます。</li>
+          <li><b>北田にだけ共有（時間枠のみ）</b>：相手が北田のGmailに「予定の表示（時間枠のみ）」で共有 → 編集画面に相手のGmailを入れます。<small>この方法は北田の画面からしか登録できません。</small></li>
+          <li><b>空き時間を書いたスプレッドシート</b>：シートのURLを入れます（1列目に日付、各セルに「10:00-11:00」のように空いている時間が書いてある形）。</li>
+        </ul>
+        <div class="tip">⚠️「iCal形式の非公開URL」は予定の中身まで全部見えてしまうURLなので、使えないようにしてあります。<br>
+          🔒 このページのURL（最後の #k=… の部分）は北田専用の合言葉です。他の人には参加者用URLを渡してください。</div>
+      </div>
 
       <h3>色の見方</h3>
       <ul>
@@ -103,34 +163,12 @@
         <li><span class="slot part">黄</span> 1人だけ都合が悪い枠です（「1人欠けてもOK」を選んだときだけ出ます。誰が来られないかも書いてあります）</li>
       </ul>
 
-      <h3>新しいメンバーの組み合わせを作るには</h3>
-      <ol>
-        <li>「メンバー」の欄の「＋新しい組み合わせ」を押します。</li>
-        <li>組み合わせの名前（例：〇〇プロジェクト）を入れます。</li>
-        <li>「＋メンバーを追加」で、一人ずつ<b>名前</b>と<b>カレンダーの共有URL（またはGmailアドレス）</b>を入れます。</li>
-        <li>「保存」を押すと、次からはタップするだけで呼び出せます。</li>
-      </ol>
-
-      <h3>参加者にお願いすること（カレンダーの共有のしかた）</h3>
-      <p>相手の方に、次のどちらかをお願いしてください。<b>どちらも予定の中身（タイトルなど）は見えず、「埋まっている時間」だけが分かる設定</b>です。</p>
-      <ul>
-        <li><b>A. 一般公開（時間枠のみ）</b><br>
-          パソコンのGoogleカレンダー →右上の歯車「設定」→左の「マイカレンダーの設定」で自分のカレンダーを選ぶ →「アクセス権限」で「一般公開して誰でも利用できるようにする」にチェック →「予定の表示（時間枠のみ、詳細は非表示）」を選ぶ。<br>
-          そのあと同じ画面の「カレンダーの統合」にある<b>「カレンダーID」</b>（Gmailアドレスのことが多いです）か<b>「公開URL」</b>を北田に送ってもらいます。</li>
-        <li><b>B. 北田にだけ共有（時間枠のみ）</b><br>
-          同じ設定画面の「特定のユーザーまたはグループと共有する」→「ユーザーやグループを追加」で北田のGmailを入れ、権限を「予定の表示（時間枠のみ、詳細は非表示）」にして送信。<br>
-          この場合、メンバー欄には相手のGmailアドレスを入れます。</li>
-      </ul>
-      <div class="tip">⚠️「iCal形式の非公開URL」は予定の中身まで全部見えてしまうURLなので、使えないようにしてあります。<br>
-        📝 <b>空き時間をスプレッドシートに書いている人</b>は、そのシートのURLを入れればOKです（1列目に日付、各セルに「10:00-11:00」のように空いている時間が書いてある形）。</div>
-
       <h3>うまくいかないとき</h3>
       <ul>
-        <li>メンバー名の横に<span class="badge err">読めません</span>と出る → 相手のカレンダーがまだ共有されていません。上の「参加者にお願いすること」を相手に送ってください。</li>
+        <li>名前の横に<span class="badge err">読めません</span>と出る → カレンダーが「一般公開（時間枠のみ）」になっていない可能性があります。上の手順をもう一度確認してください。</li>
         <li>候補が1つも出ない → 期間を長くする、長さを短くする、「1人欠けてもOK」にする、を試してください。</li>
         <li>予定を入れたのに反映されない → 下の「探す」をもう一度押してください（毎回最新のカレンダーを読みにいきます）。</li>
       </ul>
-      <div class="tip">🔒 このページのURL（最後の #k=… の部分）は合言葉です。予定の中身（予定名）はこの画面には一切出ませんが、メンバーの組み合わせを編集できてしまうので、北田以外には渡さないでください。</div>
     </details>
   </section>
 
@@ -138,11 +176,16 @@
     <h2>メンバー</h2>
     <div class="row" id="groups"></div>
     <ul class="members" id="memberList"></ul>
-    <div class="row">
+    <div id="reg" class="regbox" hidden></div>
+    <div class="row owner-only">
+      <button class="linkbtn" id="shareBtn">🔗 参加者用URLをコピー</button>
+      <button class="linkbtn" id="resetBtn" style="color:var(--sub)">（参加者用URLを作り直す）</button>
+    </div>
+    <div class="row owner-only">
       <button class="linkbtn" id="editBtn">✏️ この組み合わせを編集</button>
       <button class="linkbtn" id="newBtn">＋新しい組み合わせ</button>
     </div>
-    <div id="editor" hidden>
+    <div id="editor" class="owner-only" hidden>
       <div class="row"><span class="lbl">名前</span><input type="text" id="gName" placeholder="例：〇〇プロジェクト" style="flex:1"></div>
       <div class="row"><span class="lbl">メンバー</span><small style="color:var(--sub)">北田は自動で入ります</small></div>
       <div id="rows"></div>
@@ -208,7 +251,7 @@
   const DOW = '日月火水木金土';
   const $ = id => document.getElementById(id);
   const state = { days: 28, len: 60, miss: 0, dow: new Set([0,1,2,3,4,5,6]) };
-  let groups = [], current = 0, result = null, editingNew = false;
+  let groups = [], current = 0, result = null, editingNew = false, role = 'owner', regIndex = -1;
 
   // ---------- 通信 ----------
   async function api(params) {
@@ -263,11 +306,15 @@
     $('memberList').innerHTML = names.map((n, i) => {
       const s = status && status[i];
       let badge = '';
-      const unset = i > 0 && !g.members[i - 1].src;
+      const mem = i > 0 ? g.members[i - 1] : null;
+      const unset = mem && !(mem.src || mem.filled);
+      // 参加者は北田が登録していない欄だけ自分で登録・変更できる
+      const reg = role === 'participant' && mem && !mem.locked
+        ? ` <button class="regbtn" data-idx="${i - 1}">${mem.filled ? '変更' : '登録する'}</button>` : '';
       if (s && !unset) badge = s.ok ? `<span class="badge ok">OK</span>${s.note ? ` <small>${esc(s.note)}</small>` : ''}`
                           : `<span class="badge err">読めません</span> <small>${esc(s.error || '')}</small>`;
-      else if (i > 0 && !g.members[i - 1].src) badge = '<span class="badge err">未設定</span> <small>カレンダーを入れると反映されます</small>';
-      return `<li>👤 ${esc(n)} ${badge}</li>`;
+      else if (unset) badge = '<span class="badge err">未設定</span> <small>カレンダーを登録すると反映されます</small>';
+      return `<li>👤 ${esc(n)} ${badge}${reg}</li>`;
     }).join('');
   }
   $('groups').addEventListener('click', e => {
@@ -304,7 +351,7 @@
       name: r.querySelector('.name').value.trim(), src: r.querySelector('.src').value.trim()
     })).filter(m => m.name);
     const next = groups.slice();
-    if (editingNew) next.push({ name, members }); else next[current] = { name, members };
+    if (editingNew) next.push({ name, members }); else next[current] = { id: groups[current].id, name, members };
     await saveGroups(next, editingNew ? next.length - 1 : current, '保存しました');
   });
   $('delGroup').addEventListener('click', async () => {
@@ -320,6 +367,55 @@
     } catch (err) { toast('保存できませんでした：' + err.message); }
   }
 
+  // ---------- 参加者用URL（北田） ----------
+  const shareUrl = g => `${location.origin}${location.pathname}#k=${g.pkey}`;
+  $('shareBtn').addEventListener('click', () => {
+    const g = groups[current]; if (!g) return;
+    copy(`日程調整のページです。はじめに、ページの「使い方」に沿ってご自分のカレンダーを登録してください（予定の中身は誰にも見えません）。\n${shareUrl(g)}`,
+      `「${g.name}」の参加者用URLをコピーしました`);
+  });
+  $('resetBtn').addEventListener('click', async () => {
+    const g = groups[current]; if (!g) return;
+    try {
+      groups = (await apiPost({ action: 'resetKey', groupId: g.id })).groups;
+      renderGroups(); toast('作り直しました。古い参加者用URLはもう使えません');
+    } catch (err) { toast('できませんでした：' + err.message); }
+  });
+
+  // ---------- 自分のカレンダーを登録（参加者） ----------
+  $('memberList').addEventListener('click', e => {
+    const b = e.target.closest('.regbtn'); if (!b) return;
+    regIndex = +b.dataset.idx;
+    const m = groups[current].members[regIndex];
+    $('reg').innerHTML = `
+      <b>${esc(m.name)}さんのカレンダーを登録</b><br>
+      Googleカレンダーの設定画面にある「カレンダーID」（多くはGmailアドレス）を貼り付けてください。
+      <input type="text" id="regSrc" placeholder="例：yamada@gmail.com">
+      <div class="err" id="regErr"></div>
+      <div class="row" style="justify-content:flex-end">
+        ${m.filled ? '<button class="linkbtn danger" id="regClear">登録を消す</button>' : ''}
+        <button class="btn" id="regCancel">やめる</button>
+        <button class="btn primary" id="regOk">登録</button>
+      </div>`;
+    $('reg').hidden = false; $('regSrc').focus();
+  });
+  $('reg').addEventListener('click', async e => {
+    if (e.target.id === 'regCancel') { $('reg').hidden = true; return; }
+    if (e.target.id !== 'regOk' && e.target.id !== 'regClear') return;
+    const src = e.target.id === 'regClear' ? '' : $('regSrc').value.trim();
+    if (e.target.id === 'regOk' && !src) { $('regErr').textContent = 'カレンダーIDを入れてください'; return; }
+    $('regErr').textContent = '確認しています…';
+    try {
+      groups = (await apiPost({ action: 'setMember', index: regIndex, src })).groups;
+      $('reg').hidden = true; toast(src ? '登録しました' : '登録を消しました'); search();
+    } catch (err) {
+      $('regErr').innerHTML = err.message === 'NOT_PUBLIC'
+        ? 'このカレンダーはまだ「一般公開（時間枠のみ）」になっていないようです。<br>上の「📖 使い方」の手順1〜5で設定してから、もう一度「登録」を押してください。'
+        : esc(err.message);
+      if (err.message === 'NOT_PUBLIC') $('help').open = true;
+    }
+  });
+
   // ---------- 検索 ----------
   async function search() {
     const g = groups[current];
@@ -328,7 +424,7 @@
     $('count').textContent = '';
     try {
       result = await api({ action: 'match', q: JSON.stringify({
-        members: g.members, days: state.days, startHour: +$('startHour').value, endHour: +$('endHour').value, step: 30
+        groupId: g.id, days: state.days, startHour: +$('startHour').value, endHour: +$('endHour').value, step: 30
       }) });
       renderGroups(); render();
     } catch (err) {
@@ -389,6 +485,11 @@
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
     else fallbackCopy(text, done);
   }
+  function copy(text, msg) {
+    const done = () => toast(msg);
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    else fallbackCopy(text, done);
+  }
   function fallbackCopy(text, done) {
     const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t);
     t.select(); document.execCommand('copy'); t.remove(); done();
@@ -407,7 +508,9 @@
     if (!store.get('seenHelp')) { $('help').open = true; store.set('seenHelp', '1'); }
     if (!KEY) { $('list').innerHTML = '<div class="msg">合言葉付きのURLから開いてください</div>'; return; }
     try {
-      groups = (await api({ action: 'groups' })).groups;
+      const r = await api({ action: 'groups' });
+      groups = r.groups; role = r.role; document.body.dataset.role = role;
+      if (role === 'participant' && groups[0].members.some(m => !m.locked && !m.filled)) $('help').open = true;
       const saved = store.get('group');
       current = Math.max(0, groups.findIndex(g => g.name === saved));
       renderGroups();
