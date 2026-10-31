@@ -268,7 +268,8 @@
     $('memberList').innerHTML = names.map((n, i) => {
       const s = status && status[i];
       let badge = '';
-      if (s) badge = s.ok ? `<span class="badge ok">OK</span>${s.note ? ` <small>${esc(s.note)}</small>` : ''}`
+      const unset = i > 0 && !g.members[i - 1].src;
+      if (s && !unset) badge = s.ok ? `<span class="badge ok">OK</span>${s.note ? ` <small>${esc(s.note)}</small>` : ''}`
                           : `<span class="badge err">読めません</span> <small>${esc(s.error || '')}</small>`;
       else if (i > 0 && !g.members[i - 1].src) badge = '<span class="badge err">未設定</span> <small>カレンダーを入れると反映されます</small>';
       return `<li>👤 ${esc(n)} ${badge}</li>`;
