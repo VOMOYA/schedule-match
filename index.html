@@ -8,85 +8,189 @@
 <style>
   :root {
     --bg: #f6f5f1; --card: #ffffff; --ink: #1f2328; --sub: #6b6f76; --line: #e3e1da;
-    --ok: #1f7a55; --ok-bg: #e5f3ec; --busy: #9a9ea5; --busy-bg: #f0efeb;
-    --accent: #1f7a55; --chip: #ecebe6; --note: #8a5a00; --note-bg: #fbf1dc;
+    --ok: #1f7a55; --ok-bg: #e5f3ec; --part: #8a5a00; --part-bg: #fbf1dc;
+    --busy: #9a9ea5; --busy-bg: #f0efeb; --accent: #1f7a55; --chip: #ecebe6;
+    --err: #b3261e; --err-bg: #fbe9e7; --field: #fbfaf7;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #16181b; --card: #1f2226; --ink: #e8e6e1; --sub: #9ca1a8; --line: #30343a;
-      --ok: #6fd3a3; --ok-bg: #173327; --busy: #737880; --busy-bg: #25282d;
-      --accent: #6fd3a3; --chip: #2a2e33; --note: #f0c36b; --note-bg: #3a2f17;
+      --ok: #6fd3a3; --ok-bg: #173327; --part: #f0c36b; --part-bg: #3a2f17;
+      --busy: #737880; --busy-bg: #25282d; --accent: #6fd3a3; --chip: #2a2e33;
+      --err: #ff8a80; --err-bg: #3b1d1b; --field: #181a1d;
     }
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
-    font-size: 15px; line-height: 1.5;
+    font-size: 15px; line-height: 1.6;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 16px 16px 96px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 16px 16px 104px; }
   header h1 { font-size: 20px; margin: 4px 0 2px; }
   header p { margin: 0; color: var(--sub); font-size: 13px; }
-  .filters { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin: 14px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
+  .card h2 { font-size: 14px; margin: 0 0 8px; color: var(--sub); font-weight: 600; }
+  details.help summary { cursor: pointer; font-weight: 600; font-size: 15px; }
+  details.help h3 { font-size: 14px; margin: 14px 0 4px; }
+  details.help ol, details.help ul { margin: 4px 0; padding-left: 1.4em; }
+  details.help li { margin: 3px 0; }
+  details.help .tip { background: var(--chip); border-radius: 8px; padding: 8px 10px; font-size: 13px; margin: 8px 0; }
   .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
-  .row > span.lbl { font-size: 12px; color: var(--sub); width: 56px; flex-shrink: 0; }
+  .row > span.lbl { font-size: 12px; color: var(--sub); width: 64px; flex-shrink: 0; }
   .chip {
     border: 1px solid transparent; background: var(--chip); color: var(--ink);
-    border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer;
+    border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; font-family: inherit;
   }
   .chip[aria-pressed="true"] { background: var(--accent); color: var(--card); }
+  select, input[type="text"] {
+    font: inherit; font-size: 14px; color: var(--ink); background: var(--field);
+    border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; min-width: 0;
+  }
   label.toggle { font-size: 13px; color: var(--sub); display: flex; gap: 6px; align-items: center; }
+  .members { list-style: none; margin: 0; padding: 0; }
+  .members li { display: flex; gap: 6px; align-items: center; padding: 3px 0; font-size: 14px; flex-wrap: wrap; }
+  .badge { font-size: 11px; border-radius: 6px; padding: 1px 6px; }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .badge.err { background: var(--err-bg); color: var(--err); }
+  .members small { color: var(--sub); font-size: 12px; }
+  .edit-row { display: grid; grid-template-columns: 7em 1fr auto; gap: 6px; margin: 6px 0; }
+  .edit-row input { width: 100%; }
+  .linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-size: 13px; cursor: pointer; padding: 4px 0; }
+  .linkbtn.danger { color: var(--err); }
   .summary { display: flex; justify-content: space-between; align-items: center; margin: 4px 2px 10px; font-size: 13px; color: var(--sub); }
   .day { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
-  .day h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: baseline; }
-  .day h2 small { font-weight: normal; color: var(--sub); font-size: 12px; }
-  .note { background: var(--note-bg); color: var(--note); font-size: 12px; border-radius: 6px; padding: 3px 8px; margin: 0 0 6px; display: inline-block; }
+  .day h3 { font-size: 16px; margin: 0 0 6px; }
+  .note { background: var(--part-bg); color: var(--part); font-size: 12px; border-radius: 6px; padding: 3px 8px; margin: 0 0 6px; display: inline-block; }
   .slots { display: flex; flex-wrap: wrap; gap: 6px; }
   .slot { border-radius: 8px; padding: 6px 10px; font-size: 14px; font-variant-numeric: tabular-nums; }
   .slot.ok { background: var(--ok-bg); color: var(--ok); font-weight: 600; }
+  .slot.part { background: var(--part-bg); color: var(--part); }
   .slot.busy { background: var(--busy-bg); color: var(--busy); font-size: 12px; }
-  .empty, .msg { text-align: center; color: var(--sub); padding: 32px 8px; }
+  .msg { text-align: center; color: var(--sub); padding: 28px 8px; }
   .bar {
     position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); display: flex; gap: 8px; justify-content: center;
   }
-  .btn { border: 0; border-radius: 10px; padding: 10px 16px; font-size: 14px; cursor: pointer; background: var(--chip); color: var(--ink); }
+  .btn { border: 0; border-radius: 10px; padding: 10px 16px; font-size: 14px; cursor: pointer; background: var(--chip); color: var(--ink); font-family: inherit; }
   .btn.primary { background: var(--accent); color: var(--card); font-weight: 600; }
   .toast { position: fixed; left: 50%; bottom: 76px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; }
   .toast.show { opacity: 1; }
+  @media (max-width: 480px) { .edit-row { grid-template-columns: 1fr auto; } .edit-row input.src { grid-column: 1 / -1; grid-row: 2; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>日程マッチ</h1>
-    <p>相手の空き時間シートと自分のGoogleカレンダーを照合しています</p>
+    <p>メンバー全員が空いている日時を、カレンダーから自動で探します</p>
   </header>
 
-  <section class="filters">
-    <div class="row" id="f-len"><span class="lbl">長さ</span>
-      <button class="chip" data-v="60" aria-pressed="true">1時間〜</button>
-      <button class="chip" data-v="120" aria-pressed="false">2時間〜</button>
-      <button class="chip" data-v="180" aria-pressed="false">3時間〜</button>
+  <section class="card">
+    <details class="help" id="help">
+      <summary>📖 使い方（はじめての方はここを開いてください）</summary>
+
+      <h3>基本の3ステップ</h3>
+      <ol>
+        <li><b>メンバーを選ぶ</b>：「メンバー」の欄で、保存してある組み合わせ（例：北田・田原・あっちゃん）をタップします。北田の予定は毎回自動で入ります。</li>
+        <li><b>条件を選ぶ</b>：期間・時間帯・長さ・曜日を選びます。迷ったらそのままでOKです。</li>
+        <li><b>「探す」を押す</b>：全員が空いている日時が緑色で出ます。「候補をコピー」を押すと、LINEやメールにそのまま貼れる文章になります。</li>
+      </ol>
+
+      <h3>色の見方</h3>
+      <ul>
+        <li><span class="slot ok">緑</span> 全員空いています</li>
+        <li><span class="slot part">黄</span> 1人だけ都合が悪い枠です（「1人欠けてもOK」を選んだときだけ出ます。誰が来られないかも書いてあります）</li>
+        <li><span class="note">終日：〇〇</span> 北田のカレンダーに入っている終日の予定です。空き判定には使っていないので、念のため確認してください</li>
+      </ul>
+
+      <h3>新しいメンバーの組み合わせを作るには</h3>
+      <ol>
+        <li>「メンバー」の欄の「＋新しい組み合わせ」を押します。</li>
+        <li>組み合わせの名前（例：〇〇プロジェクト）を入れます。</li>
+        <li>「＋メンバーを追加」で、一人ずつ<b>名前</b>と<b>カレンダーの共有URL（またはGmailアドレス）</b>を入れます。</li>
+        <li>「保存」を押すと、次からはタップするだけで呼び出せます。</li>
+      </ol>
+
+      <h3>参加者にお願いすること（カレンダーの共有のしかた）</h3>
+      <p>相手の方に、次のどちらかをお願いしてください。<b>どちらも予定の中身（タイトルなど）は見えず、「埋まっている時間」だけが分かる設定</b>です。</p>
+      <ul>
+        <li><b>A. 一般公開（時間枠のみ）</b><br>
+          パソコンのGoogleカレンダー →右上の歯車「設定」→左の「マイカレンダーの設定」で自分のカレンダーを選ぶ →「アクセス権限」で「一般公開して誰でも利用できるようにする」にチェック →「予定の表示（時間枠のみ、詳細は非表示）」を選ぶ。<br>
+          そのあと同じ画面の「カレンダーの統合」にある<b>「カレンダーID」</b>（Gmailアドレスのことが多いです）か<b>「公開URL」</b>を北田に送ってもらいます。</li>
+        <li><b>B. 北田にだけ共有（時間枠のみ）</b><br>
+          同じ設定画面の「特定のユーザーまたはグループと共有する」→「ユーザーやグループを追加」で北田のGmailを入れ、権限を「予定の表示（時間枠のみ、詳細は非表示）」にして送信。<br>
+          この場合、メンバー欄には相手のGmailアドレスを入れます。</li>
+      </ul>
+      <div class="tip">⚠️「iCal形式の非公開URL」は予定の中身まで全部見えてしまうURLなので、使えないようにしてあります。<br>
+        📝 <b>空き時間をスプレッドシートに書いている人</b>は、そのシートのURLを入れればOKです（1列目に日付、各セルに「10:00-11:00」のように空いている時間が書いてある形）。</div>
+
+      <h3>うまくいかないとき</h3>
+      <ul>
+        <li>メンバー名の横に<span class="badge err">読めません</span>と出る → 相手のカレンダーがまだ共有されていません。上の「参加者にお願いすること」を相手に送ってください。</li>
+        <li>候補が1つも出ない → 期間を長くする、長さを短くする、「1人欠けてもOK」にする、を試してください。</li>
+        <li>予定を入れたのに反映されない → 下の「探す」をもう一度押してください（毎回最新のカレンダーを読みにいきます）。</li>
+      </ul>
+      <div class="tip">🔒 このページのURL（最後の #k=… の部分）は合言葉です。他の人には渡さないでください。北田の予定の理由（予定名）が見えてしまいます。</div>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>メンバー</h2>
+    <div class="row" id="groups"></div>
+    <ul class="members" id="memberList"></ul>
+    <div class="row">
+      <button class="linkbtn" id="editBtn">✏️ この組み合わせを編集</button>
+      <button class="linkbtn" id="newBtn">＋新しい組み合わせ</button>
     </div>
-    <div class="row" id="f-time"><span class="lbl">時間帯</span>
-      <button class="chip" data-v="am" aria-pressed="true">午前</button>
-      <button class="chip" data-v="pm" aria-pressed="true">午後</button>
-      <button class="chip" data-v="ev" aria-pressed="true">夜(18時〜)</button>
+    <div id="editor" hidden>
+      <div class="row"><span class="lbl">名前</span><input type="text" id="gName" placeholder="例：〇〇プロジェクト" style="flex:1"></div>
+      <div class="row"><span class="lbl">メンバー</span><small style="color:var(--sub)">北田は自動で入ります</small></div>
+      <div id="rows"></div>
+      <button class="linkbtn" id="addRow">＋メンバーを追加</button>
+      <div class="row" style="justify-content:space-between;margin-top:8px">
+        <button class="linkbtn danger" id="delGroup">この組み合わせを削除</button>
+        <span>
+          <button class="btn" id="cancelEdit">やめる</button>
+          <button class="btn primary" id="saveGroup">保存</button>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>条件</h2>
+    <div class="row" id="f-days"><span class="lbl">期間</span>
+      <button class="chip" data-v="14" aria-pressed="false">2週間</button>
+      <button class="chip" data-v="28" aria-pressed="true">4週間</button>
+      <button class="chip" data-v="56" aria-pressed="false">8週間</button>
+    </div>
+    <div class="row"><span class="lbl">時間帯</span>
+      <select id="startHour"></select><span>〜</span><select id="endHour"></select>
+    </div>
+    <div class="row" id="f-len"><span class="lbl">長さ</span>
+      <button class="chip" data-v="30" aria-pressed="false">30分〜</button>
+      <button class="chip" data-v="60" aria-pressed="true">1時間〜</button>
+      <button class="chip" data-v="90" aria-pressed="false">1.5時間〜</button>
+      <button class="chip" data-v="120" aria-pressed="false">2時間〜</button>
     </div>
     <div class="row" id="f-dow"><span class="lbl">曜日</span></div>
+    <div class="row" id="f-miss"><span class="lbl">参加</span>
+      <button class="chip" data-v="0" aria-pressed="true">全員そろう</button>
+      <button class="chip" data-v="1" aria-pressed="false">1人欠けてもOK</button>
+    </div>
     <div class="row"><span class="lbl"></span>
-      <label class="toggle"><input type="checkbox" id="f-busy"> 合わない枠と理由も表示</label>
+      <label class="toggle"><input type="checkbox" id="f-why"> 北田の都合が悪い枠と理由も表示</label>
     </div>
   </section>
 
   <div class="summary"><span id="count"></span><span id="updated"></span></div>
-  <div id="list"><div class="msg">読み込み中…</div></div>
+  <div id="list"><div class="msg">メンバーを選んで「探す」を押してください</div></div>
 </div>
 
 <div class="bar">
-  <button class="btn" id="reload">更新</button>
-  <button class="btn primary" id="copy">候補をコピー</button>
+  <button class="btn primary" id="search">探す</button>
+  <button class="btn" id="copy">候補をコピー</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -100,122 +204,233 @@
       return m ? m[1] : localStorage.getItem('k');
     } catch (e) { return m && m[1]; }
   })();
-  const DOW = '日月火水木金土';
-  let data = null;
-  const state = { len: 60, time: new Set(['am', 'pm', 'ev']), dow: new Set([0,1,2,3,4,5,6]), busy: false };
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
 
-  const dowRow = document.getElementById('f-dow');
+  const DOW = '日月火水木金土';
+  const $ = id => document.getElementById(id);
+  const state = { days: 28, len: 60, miss: 0, dow: new Set([0,1,2,3,4,5,6]), why: false };
+  let groups = [], current = 0, result = null, editingNew = false;
+
+  // ---------- 通信 ----------
+  async function api(params) {
+    const q = new URLSearchParams({ k: KEY, ...params });
+    const r = await fetch(`${API}?${q}`);
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    return j;
+  }
+  async function apiPost(body) {
+    const r = await fetch(API, { method: 'POST', body: JSON.stringify({ k: KEY, ...body }) });
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    return j;
+  }
+
+  // ---------- 条件 ----------
+  for (let h = 0; h <= 24; h++) {
+    if (h < 24) $('startHour').add(new Option(`${h}時`, h));
+    if (h > 0) $('endHour').add(new Option(`${h}時`, h));
+  }
+  $('startHour').value = 8; $('endHour').value = 22;
   [1,2,3,4,5,6,0].forEach(d => {
     const b = document.createElement('button');
     b.className = 'chip'; b.dataset.v = d; b.textContent = DOW[d]; b.setAttribute('aria-pressed', 'true');
-    dowRow.appendChild(b);
+    $('f-dow').appendChild(b);
   });
-
-  function single(rowId, key) {
-    document.getElementById(rowId).addEventListener('click', e => {
+  function single(rowId, key, rerender) {
+    $(rowId).addEventListener('click', e => {
       const b = e.target.closest('.chip'); if (!b) return;
       [...e.currentTarget.querySelectorAll('.chip')].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-      state[key] = +b.dataset.v; render();
+      state[key] = +b.dataset.v; if (rerender) render();
     });
   }
-  function multi(rowId, key, cast) {
-    document.getElementById(rowId).addEventListener('click', e => {
-      const b = e.target.closest('.chip'); if (!b) return;
-      const v = cast(b.dataset.v), on = b.getAttribute('aria-pressed') !== 'true';
-      b.setAttribute('aria-pressed', String(on));
-      on ? state[key].add(v) : state[key].delete(v); render();
-    });
-  }
-  single('f-len', 'len');
-  multi('f-time', 'time', String);
-  multi('f-dow', 'dow', Number);
-  document.getElementById('f-busy').addEventListener('change', e => { state.busy = e.target.checked; render(); });
+  single('f-days', 'days', false);
+  single('f-len', 'len', true);
+  single('f-miss', 'miss', true);
+  $('f-dow').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    const v = +b.dataset.v, on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', String(on)); on ? state.dow.add(v) : state.dow.delete(v); render();
+  });
+  $('f-why').addEventListener('change', e => { state.why = e.target.checked; render(); });
 
-  const band = m => m < 12 * 60 ? 'am' : m < 18 * 60 ? 'pm' : 'ev';
+  // ---------- メンバー ----------
+  function renderGroups() {
+    $('groups').innerHTML = groups.map((g, i) =>
+      `<button class="chip" data-i="${i}" aria-pressed="${i === current}">${esc(g.name)}</button>`).join('')
+      || '<small style="color:var(--sub)">まだ組み合わせがありません</small>';
+    const g = groups[current];
+    const status = result ? result.members : null;
+    const names = ['北田', ...(g ? g.members.map(m => m.name) : [])];
+    $('memberList').innerHTML = names.map((n, i) => {
+      const s = status && status[i];
+      let badge = '';
+      if (s) badge = s.ok ? `<span class="badge ok">OK</span>${s.note ? ` <small>${esc(s.note)}</small>` : ''}`
+                          : `<span class="badge err">読めません</span> <small>${esc(s.error || '')}</small>`;
+      else if (i > 0 && !g.members[i - 1].src) badge = '<span class="badge err">未設定</span> <small>カレンダーを入れると反映されます</small>';
+      return `<li>👤 ${esc(n)} ${badge}</li>`;
+    }).join('');
+  }
+  $('groups').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    current = +b.dataset.i; store.set('group', groups[current].name);
+    result = null; $('editor').hidden = true; renderGroups();
+    $('list').innerHTML = '<div class="msg">「探す」を押してください</div>'; $('count').textContent = '';
+  });
+
+  function rowHtml(m) {
+    return `<div class="edit-row">
+      <input type="text" class="name" placeholder="名前" value="${esc(m.name || '')}">
+      <input type="text" class="src" placeholder="カレンダーの共有URL・Gmail・シートURL" value="${esc(m.src || '')}">
+      <button class="linkbtn danger del" title="削除">✕</button></div>`;
+  }
+  function openEditor(isNew) {
+    editingNew = isNew;
+    const g = isNew ? { name: '', members: [{ name: '', src: '' }] } : groups[current];
+    if (!g) return openEditor(true);
+    $('gName').value = g.name;
+    $('rows').innerHTML = g.members.map(rowHtml).join('');
+    $('delGroup').hidden = isNew;
+    $('editor').hidden = false;
+  }
+  $('editBtn').addEventListener('click', () => openEditor(false));
+  $('newBtn').addEventListener('click', () => openEditor(true));
+  $('addRow').addEventListener('click', () => $('rows').insertAdjacentHTML('beforeend', rowHtml({})));
+  $('rows').addEventListener('click', e => { if (e.target.closest('.del')) e.target.closest('.edit-row').remove(); });
+  $('cancelEdit').addEventListener('click', () => { $('editor').hidden = true; });
+  $('saveGroup').addEventListener('click', async () => {
+    const name = $('gName').value.trim();
+    if (!name) return toast('組み合わせの名前を入れてください');
+    const members = [...$('rows').querySelectorAll('.edit-row')].map(r => ({
+      name: r.querySelector('.name').value.trim(), src: r.querySelector('.src').value.trim()
+    })).filter(m => m.name);
+    const next = groups.slice();
+    if (editingNew) next.push({ name, members }); else next[current] = { name, members };
+    await saveGroups(next, editingNew ? next.length - 1 : current, '保存しました');
+  });
+  $('delGroup').addEventListener('click', async () => {
+    const next = groups.filter((_, i) => i !== current);
+    await saveGroups(next, 0, '削除しました');
+  });
+  async function saveGroups(next, idx, msg) {
+    try {
+      const r = await apiPost({ action: 'saveGroups', groups: next });
+      groups = r.groups; current = Math.max(0, Math.min(idx, groups.length - 1));
+      if (groups[current]) store.set('group', groups[current].name);
+      $('editor').hidden = true; result = null; renderGroups(); toast(msg);
+    } catch (err) { toast('保存できませんでした：' + err.message); }
+  }
+
+  // ---------- 検索 ----------
+  async function search() {
+    const g = groups[current];
+    if (!g) return toast('先にメンバーの組み合わせを作ってください');
+    $('list').innerHTML = '<div class="msg">カレンダーを読んでいます…（10秒ほどかかることがあります）</div>';
+    $('count').textContent = '';
+    try {
+      result = await api({ action: 'match', q: JSON.stringify({
+        members: g.members, days: state.days, startHour: +$('startHour').value, endHour: +$('endHour').value, step: 30
+      }) });
+      renderGroups(); render();
+    } catch (err) {
+      $('list').innerHTML = `<div class="msg">読み込めませんでした<br><small>${esc(err.message)}</small></div>`;
+    }
+  }
+  $('search').addEventListener('click', search);
+
   const hm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
 
-  // 続いている空き枠を1つの範囲にまとめる
-  function mergeOk(slots) {
-    const ok = slots.filter(s => s.ok).sort((a, b) => a.startMin - b.startMin), out = [];
-    ok.forEach(s => {
-      const last = out[out.length - 1];
-      if (last && last.endMin === s.startMin) last.endMin = s.endMin;
-      else out.push({ startMin: s.startMin, endMin: s.endMin });
+  // 条件を満たす連続した枠を、欠ける人の組み合わせごとに1つの範囲にまとめる
+  function ranges(day) {
+    const step = result.step, out = [];
+    let cur = null;
+    day.cells.forEach(c => {
+      const key = c.out.length <= state.miss ? c.out.join(',') : null;
+      if (cur && key !== null && key === cur.key && cur.end === c.m) { cur.end = c.m + step; return; }
+      if (cur) out.push(cur);
+      cur = key === null ? null : { key, start: c.m, end: c.m + step, out: c.out };
+    });
+    if (cur) out.push(cur);
+    return out.filter(r => r.end - r.start >= state.len);
+  }
+  function busyOfSelf(day) {
+    const step = result.step, out = [];
+    day.cells.filter(c => c.why).forEach(c => {
+      const why = [...new Set(c.why)].join('・'), l = out[out.length - 1];
+      if (l && l.why === why && l.end === c.m) l.end = c.m + step;
+      else out.push({ start: c.m, end: c.m + step, why });
     });
     return out;
   }
+  const who = r => r.out.map(i => result.members[i].name).join('・');
 
-  function filtered() {
-    return data.days.filter(d => state.dow.has(d.dow)).map(d => {
-      // 時間帯で切ってから長さで絞る
-      const inBand = d.slots.filter(s => state.time.has(band(s.startMin)));
-      const ranges = mergeOk(inBand).filter(r => r.endMin - r.startMin >= state.len);
-      const busy = inBand.filter(s => !s.ok);
-      return { ...d, ranges, busy };
-    }).filter(d => d.ranges.length || (state.busy && d.busy.length));
+  function view() {
+    return result.days.filter(d => state.dow.has(d.dow)).map(d => ({ ...d, rs: ranges(d), busy: state.why ? busyOfSelf(d) : [] }))
+      .filter(d => d.rs.length || d.busy.length);
   }
-
   function render() {
-    if (!data) return;
-    const days = filtered(), list = document.getElementById('list');
-    const n = days.reduce((a, d) => a + d.ranges.length, 0);
-    document.getElementById('count').textContent = `候補 ${n}枠 / ${days.filter(d => d.ranges.length).length}日`;
-    document.getElementById('updated').textContent = `${data.updatedAt} 時点`;
-    if (!days.length) { list.innerHTML = '<div class="empty">条件に合う日時がありません</div>'; return; }
-    list.innerHTML = days.map(d => `
+    if (!result) return;
+    const days = view();
+    const n = days.reduce((a, d) => a + d.rs.length, 0);
+    $('count').textContent = `候補 ${n}枠 / ${days.filter(d => d.rs.length).length}日`;
+    $('updated').textContent = `${result.updatedAt} 時点`;
+    if (!days.length) {
+      $('list').innerHTML = '<div class="msg">条件に合う日時がありません<br><small>期間を長くする・長さを短くする・「1人欠けてもOK」を試してください</small></div>';
+      return;
+    }
+    $('list').innerHTML = days.map(d => `
       <article class="day">
-        <h2>${d.label}${d.ranges.length ? '' : ' <small>合う枠なし</small>'}</h2>
+        <h3>${d.label}</h3>
         ${d.allDay.length ? `<div class="note">終日：${esc(d.allDay.join('、'))}</div>` : ''}
         <div class="slots">
-          ${d.ranges.map(r => `<span class="slot ok">${hm(r.startMin)}–${hm(r.endMin)}</span>`).join('')}
-          ${state.busy ? d.busy.map(s => `<span class="slot busy">${s.start}–${s.end} ${esc(s.busy.join('・'))}</span>`).join('') : ''}
+          ${d.rs.map(r => r.out.length
+              ? `<span class="slot part">${hm(r.start)}–${hm(r.end)}（${esc(who(r))}さん不可）</span>`
+              : `<span class="slot ok">${hm(r.start)}–${hm(r.end)}</span>`).join('')}
+          ${d.busy.map(b => `<span class="slot busy">${hm(b.start)}–${hm(b.end)} ${esc(b.why)}</span>`).join('')}
         </div>
       </article>`).join('');
   }
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-
   function copyText() {
-    if (!data) return;
-    const lines = filtered().filter(d => d.ranges.length)
-      .map(d => `・${d.label} ${d.ranges.map(r => `${hm(r.startMin)}–${hm(r.endMin)}`).join('／')}`);
-    const text = lines.length ? `候補日時です。\n${lines.join('\n')}` : '';
-    if (!text) return toast('コピーする候補がありません');
+    if (!result) return toast('先に「探す」を押してください');
+    const lines = view().filter(d => d.rs.length).map(d => `・${d.label} ` + d.rs.map(r =>
+      `${hm(r.start)}–${hm(r.end)}${r.out.length ? `（${who(r)}さん不可）` : ''}`).join('／'));
+    if (!lines.length) return toast('コピーする候補がありません');
+    const text = `候補日時です。\n${lines.join('\n')}`;
     const done = () => toast('候補をコピーしました');
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
-    } else fallbackCopy(text, done);
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    else fallbackCopy(text, done);
   }
   function fallbackCopy(text, done) {
     const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t);
     t.select(); document.execCommand('copy'); t.remove(); done();
   }
+  $('copy').addEventListener('click', copyText);
 
   let timer;
   function toast(msg) {
-    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-    clearTimeout(timer); timer = setTimeout(() => t.classList.remove('show'), 1800);
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(timer); timer = setTimeout(() => t.classList.remove('show'), 2200);
   }
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
-  function load() {
-    document.getElementById('list').innerHTML = '<div class="msg">読み込み中…</div>';
-    const fail = msg => {
-      document.getElementById('list').innerHTML =
-        `<div class="msg">読み込めませんでした<br><small>${esc(msg)}</small></div>`;
-    };
-    if (!KEY) return fail('合言葉付きのURLから開いてください');
-    fetch(`${API}?format=json&k=${encodeURIComponent(KEY)}`)
-      .then(r => r.text())
-      .then(txt => {
-        let r;
-        try { r = JSON.parse(txt); } catch (e) { throw new Error('URLの合言葉が正しくありません'); }
-        data = r; render();
-      })
-      .catch(err => fail(err.message || String(err)));
-  }
-  document.getElementById('reload').addEventListener('click', load);
-  document.getElementById('copy').addEventListener('click', copyText);
-  load();
+  // ---------- 起動 ----------
+  (async () => {
+    if (!store.get('seenHelp')) { $('help').open = true; store.set('seenHelp', '1'); }
+    if (!KEY) { $('list').innerHTML = '<div class="msg">合言葉付きのURLから開いてください</div>'; return; }
+    try {
+      groups = (await api({ action: 'groups' })).groups;
+      const saved = store.get('group');
+      current = Math.max(0, groups.findIndex(g => g.name === saved));
+      renderGroups();
+      if (groups.length) search();
+    } catch (err) {
+      $('list').innerHTML = `<div class="msg">読み込めませんでした<br><small>${esc(err.message)}</small></div>`;
+    }
+  })();
 </script>
 </body>
 </html>
